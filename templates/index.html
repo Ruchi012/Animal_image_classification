@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Field ID — Cat or Dog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="masthead-rule"></div>
+    <p class="eyebrow">Field Identification Service · No. 128×128</p>
+    <h1>Cat, or Dog?</h1>
+    <p class="sub">Upload a specimen photograph. The classifier will render an identification.</p>
+    <div class="masthead-rule"></div>
+  </header>
+
+  <main class="card">
+
+    <section class="specimen-panel">
+      <div class="specimen-slot {% if image_url %}has-image{% endif %}" id="specimenSlot">
+        {% if image_url %}
+          <img src="{{ image_url }}" alt="Uploaded specimen" class="specimen-photo">
+        {% else %}
+          <div class="specimen-empty">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+              <path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z"/>
+              <circle cx="12" cy="13" r="3.4"/>
+            </svg>
+            <p>No specimen loaded</p>
+          </div>
+        {% endif %}
+        <span class="tape tape-tl"></span>
+        <span class="tape tape-tr"></span>
+        <span class="tape tape-bl"></span>
+        <span class="tape tape-br"></span>
+      </div>
+
+      <form method="POST" enctype="multipart/form-data" id="uploadForm">
+        <label class="file-btn" for="fileInput">
+          <span id="fileLabel">Choose photograph</span>
+        </label>
+        <input type="file" id="fileInput" name="image" accept=".jpg,.jpeg,.png,.webp" hidden>
+        <button type="submit" class="submit-btn">Submit for identification</button>
+      </form>
+
+      {% if error %}
+        <p class="error-note">⚠ {{ error }}</p>
+      {% endif %}
+    </section>
+
+    <section class="entry-panel">
+      <p class="entry-eyebrow">Identification entry</p>
+
+      {% if result %}
+        <div class="stamp stamp-{{ result.label|lower }}">
+          <span class="stamp-label">Identified as</span>
+          <span class="stamp-word">{{ result.label }}</span>
+        </div>
+
+        <div class="gauge">
+          <div class="gauge-head">
+            <span>Confidence</span>
+            <span class="gauge-value">{{ result.confidence }}%</span>
+          </div>
+          <div class="gauge-track">
+            <div class="gauge-fill" style="width: {{ result.confidence }}%;"></div>
+          </div>
+        </div>
+
+        <p class="entry-note">
+          {% if result.label == 'Dog' %}
+            Traits consistent with <em>Canis familiaris</em> — the model weighted this above the midline threshold of 0.5.
+          {% else %}
+            Traits consistent with <em>Felis catus</em> — the model weighted this below the midline threshold of 0.5.
+          {% endif %}
+        </p>
+      {% else %}
+        <div class="entry-placeholder">
+          <p>Awaiting a specimen.</p>
+          <p class="entry-placeholder-sub">Results — species, confidence, field notes — will be logged here once a photograph is submitted.</p>
+        </div>
+      {% endif %}
+
+      <dl class="specs">
+        <div><dt>Input size</dt><dd>128 × 128 px</dd></div>
+        <div><dt>Classes</dt><dd>Cat · Dog</dd></div>
+        <div><dt>Model</dt><dd>cat_dog_model.keras</dd></div>
+      </dl>
+    </section>
+
+  </main>
+
+  <footer class="footnote">
+    <p>Binary classifier, trained locally. Threshold at 0.5 separates the two catalogued classes.</p>
+  </footer>
+
+</div>
+
+<script>
+  const fileInput = document.getElementById('fileInput');
+  const fileLabel = document.getElementById('fileLabel');
+  const form = document.getElementById('uploadForm');
+  const slot = document.getElementById('specimenSlot');
+
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files.length) {
+      fileLabel.textContent = fileInput.files[0].name;
+
+      const reader = new FileReader();
+      reader.onload = e => {
+        slot.classList.add('has-image');
+        slot.querySelectorAll('.specimen-empty').forEach(el => el.remove());
+        let img = slot.querySelector('.specimen-photo');
+        if (!img) {
+          img = document.createElement('img');
+          img.className = 'specimen-photo';
+          slot.prepend(img);
+        }
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(fileInput.files[0]);
+    }
+  });
+
+  form.addEventListener('submit', () => {
+    slot.classList.add('scanning');
+    const btn = form.querySelector('.submit-btn');
+    btn.textContent = 'Scanning…';
+    btn.disabled = true;
+  });
+</script>
+
+</body>
+</html>
