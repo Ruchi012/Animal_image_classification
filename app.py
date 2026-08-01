@@ -35,7 +35,7 @@ def predict(image_path: str):
     img = tf.keras.preprocessing.image.load_img(image_path, target_size=TARGET_SIZE)
     arr = tf.keras.preprocessing.image.img_to_array(img)
     arr = np.expand_dims(arr, axis=0)
-    arr = arr / 255.0
+    # arr = arr / 255.0
 
     raw_score = float(model.predict(arr, verbose=0)[0][0])
 

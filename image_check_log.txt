@@ -1,0 +1,13 @@
+Starting image check (using TensorFlow's own decoder this time)...
+Dataset folder: C:\Users\iruch\Desktop\DATASCIENCE AND AI PROJECTS\Project\Animal_image_classification\dataset
+  ...checked 200 so far
+  ...checked 400 so far
+  ...checked 600 so far
+  ...checked 800 so far
+  ...checked 1000 so far
+  ...checked 1200 so far
+Checked 1213 files total.
+Found 1 problem file(s) according to TensorFlow's decoder:
+  dataset\dog\9500.jpg  ->  DECODE ERROR: {{function_node __wrapped__DecodeImage_device_/job:localhost/replica:0/task:0/device:CPU:0}} Number of channels inherent in the image must be 1, 3 or 4, was 2 [Op:DecodeImage] name: 
+Force-fixing all flagged files by re-saving as clean RGB JPEG...
+Fixed 1 of 1 flagged file(s).
