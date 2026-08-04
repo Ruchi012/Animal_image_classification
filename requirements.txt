@@ -4,6 +4,7 @@
 flask
 werkzeug
 gunicorn
-tensorflow-cpu==2.21.0
+# tensorflow-cpu==2.21.0
+tflite-runtime
 numpy
 pillow
