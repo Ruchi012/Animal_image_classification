@@ -6,5 +6,5 @@ werkzeug
 gunicorn
 # tensorflow-cpu==2.21.0
 tflite-runtime
-numpy
+numpy<2
 pillow
