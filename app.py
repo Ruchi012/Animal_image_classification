@@ -118,7 +118,7 @@ def predict(image_path: str):
     img = Image.open(image_path).convert("RGB").resize(TARGET_SIZE)
     arr = np.array(img, dtype=np.float32)
     arr = np.expand_dims(arr, axis=0)
-    arr = arr / 255.0
+    # arr = arr / 255.0
 
     interpreter.set_tensor(input_details[0]["index"], arr)
     interpreter.invoke()
